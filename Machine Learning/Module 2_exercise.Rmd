@@ -1,0 +1,122 @@
+---
+title: 'Module 1: Introduction to Machine Learning'
+author: "Seongryung Kim"
+date: "2024-11-12"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#2.4 Exercises Problem 9
+##This exercise involves the Auto data set studied in the R Videos. Make sure that the missing values have been removed from the data.
+
+```{r}
+
+#Load necessary libraries
+library(ISLR)
+library(MASS)
+
+#Load the Auto dataset
+#Remove missing values first
+Auto=read.csv("Auto.csv",header=T, na.strings = "?")
+Auto =na.omit(Auto)
+
+```
+
+
+## (a) Which of the predictors are quantitative, and which are qualitative?
+
+**Answer**
+- Quantitive: mpg, displacement, horsepower, weight, acceleration, year
+- Qualitative: cylinders, origin, name
+
+```{r}
+
+sapply(Auto, class)
+head(Auto)
+
+```
+## (b) What is the range of each quantitative predictor? You can answer this using the range() function.
+
+
+```{r}
+
+# Find the range of each quantitative predictor
+ranges <- sapply(Auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], range)
+ranges
+
+```
+
+
+## (c) What is the mean and standard deviation of each quantitative predictor?
+
+
+```{r}
+
+# Calculate mean and standard deviation
+means <- sapply(Auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], mean)
+sds <- sapply(Auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], sd)
+
+# Combine results into a table
+summary_stats <- data.frame(Mean = means, SD = sds)
+summary_stats
+
+```
+
+
+## (d) Now remove the 10th through 85th observations. What is the range, mean, and standard deviation of each predictor in the subset of the data that remains?
+
+
+```{r}
+
+# Remove the 10th through 85th observations
+Auto_subset <- Auto[-(10:85), ]
+
+# Compute the range, mean, and standard deviation for the subset data
+subset_ranges <- sapply(Auto_subset[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], range)
+subset_means <- sapply(Auto_subset[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], mean)
+subset_sds <- sapply(Auto_subset[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], sd)
+
+# Combine results into a table
+subset_stats <- data.frame(Range = subset_ranges[1, ], Mean = subset_means, SD = subset_sds)
+subset_stats
+
+
+```
+
+## (e) Using the full data set, investigate the predictors graphically, using scatterplots or other tools of your choice. Create some plots highlighting the relationships among the predictors. Comment on your findings.
+
+**Answer**
+- mpg has a negative correlation with weight and displacement, suggesting that cars with more weight and displacement tend to have lower fuel efficiency.
+
+```{r}
+
+# Scatterplot matrix for a quick overview of relationships
+pairs(Auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")], main = "Scatterplot Matrix of Predictors")
+
+# Individual scatterplot for mpg vs. weight
+plot(Auto$weight, Auto$mpg, 
+     xlab = "Weight", ylab = "MPG", 
+     main = "MPG vs. Weight")
+
+# Correlation plot
+library(corrplot)
+cor_matrix <- cor(Auto[, c("mpg", "cylinders", "displacement", "horsepower", "weight", "acceleration", "year")])
+corrplot(cor_matrix, method = "circle", type = "upper", order = "hclust", tl.col = "black", tl.srt = 45)
+
+round(cor(Auto[,-9]),digits=3)
+
+```
+
+## (f) Suppose that we wish to predict gas mileage (mpg) on the basis of the other variables. Do your plots suggest that any of the other variables might be useful in predicting mpg? Justify your answer.
+
+**Answer**
+- Weight: There is a negative relationship with mpg, indicating that heavier cars tend to have lower fuel efficiency.
+- Horsepower: This also shows some negative correlation with mpg, implying that cars with more horsepower tend to consume more fuel.
+- Displacement: Like weight and horsepower, this is negatively correlated with mpg.
+
+
